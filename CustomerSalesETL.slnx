@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/Application/">
+    <Project Path="CustomerSales.Application/CustomerSales.Application.csproj" Id="d5520fb5-f7b8-4eec-84d1-94df9ec542e7" />
+  </Folder>
+  <Folder Name="/Data/">
+    <Project Path="CustomerSales.Data/CustomerSales.Data.csproj" Id="f7d96d16-1b3a-4b51-a6e2-ad4c2eb70d91" />
+  </Folder>
+  <Folder Name="/Presentation/">
+    <Project Path="CustomerSalesAPI/CustomerSales.API.csproj" Id="c95873d0-5789-4add-b478-e4a0ef7569c2" />
+  </Folder>
+  <Folder Name="/Proccess/">
+    <Project Path="CustomerSales.WkService/CustomerSales.WkService.csproj" Id="8804a4ce-fdba-4e2c-9633-9d8fd81d70d8" />
+  </Folder>
+</Solution>

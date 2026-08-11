@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using CustomerSales.Data.Entities.Db;
 
-namespace CustomerSales.Data.Persistence.EntityConfigurations
+namespace CustomerSales.Data.Persistence.EntityConfigurations.Db
 {
     public class SaleEntityConfiguration : IEntityTypeConfiguration<Sale>
     {

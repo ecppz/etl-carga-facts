@@ -1,7 +1,7 @@
 ﻿using CustomerSales.Data.Entities.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-namespace CustomerSales.Data.Persistence.EntityConfigurations
+namespace CustomerSales.Data.Persistence.EntityConfigurations.Db
 {
     public class ProductEntityConfiguration : IEntityTypeConfiguration<Product>
     {

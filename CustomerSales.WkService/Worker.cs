@@ -1,3 +1,5 @@
+using CustomerSales.Data.Entities.Dwh;
+using CustomerSales.Data.Persistence.Contexts;
 using CustomerSales.WkService.Interfaces;
 
 namespace CustomerSales.WkService
@@ -15,24 +17,76 @@ namespace CustomerSales.WkService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            using var scope = _scopeFactory.CreateScope();
+
+            var api = scope.ServiceProvider.GetRequiredService<IApiExtractor>();
+            var dwContext = scope.ServiceProvider.GetRequiredService<CustomerSalesDWContext>();
+
+            dwContext.DimCustomers.RemoveRange(dwContext.DimCustomers);
+            dwContext.DimProducts.RemoveRange(dwContext.DimProducts);
+            dwContext.DimStores.RemoveRange(dwContext.DimStores);
+            dwContext.DimPaymentMethods.RemoveRange(dwContext.DimPaymentMethods);
+            dwContext.FactSales.RemoveRange(dwContext.FactSales);
+
+            await dwContext.SaveChangesAsync();
+
+            var sales = await api.ExtractSalesAsync();
+            var customers = await api.ExtractCustomersAsync();
+            var products = await api.ExtractProductsAsync();
+            var stores = await api.ExtractStoresAsync();
+            var paymentMethods = await api.ExtractPaymentMethodsAsync();
+
+            dwContext.DimCustomers.AddRange(customers.Select(c => new DimCustomer
             {
-                using var scope = _scopeFactory.CreateScope();
+                CustomerId = c.CustomerId,
+                FirstName = c.FirstName,
+                LastName = c.LastName,
+                Phone = c.Phone,
+                Address = c.Address,
+                Email = c.Email
+            }));
 
-                var csv = scope.ServiceProvider.GetRequiredService<ICsvExtractor>();
-                var db = scope.ServiceProvider.GetRequiredService<IDatabaseExtractor>();
-                var api = scope.ServiceProvider.GetRequiredService<IApiExtractor>();
+            dwContext.DimProducts.AddRange(products.Select(p => new DimProduct
+            {
+                ProductId = p.ProductId,
+                ProductName = p.ProductName,
+                Category = p.Category,
+                Price = p.Price,
+                Stock = p.Stock
+            }));
 
-                var csvData = await csv.ExtractAsync();
-                var dbData = await db.ExtractAsync();
-                var apiData = await api.ExtractAsync();
+            dwContext.DimStores.AddRange(stores.Select(s => new DimStore
+            {
+                StoreId = s.StoreId,
+                StoreName = s.StoreName,
+                Location = s.Location
+            }));
 
-                _logger.LogInformation("Cycle completed. CSV:{csvCount}, DB:{dbCount}, API:{apiCount}",
-                    csvData.Count(), dbData.Count(), apiData.Count());
+            dwContext.DimPaymentMethods.AddRange(paymentMethods.Select(pm => new DimPaymentMethod
+            {
+                PaymentId = pm.PaymentId,
+                MethodName = pm.MethodName
+            }));
 
-                await Task.Delay(10000, stoppingToken);
-            }
+            await dwContext.SaveChangesAsync();
+
+            dwContext.FactSales.AddRange(sales.Select(s => new FactSale
+            {
+                SaleId = s.SaleId,
+                CustomerId = s.CustomerId,
+                ProductId = s.ProductId,
+                StoreId = s.StoreId,
+                PaymentId = s.PaymentId,
+                SaleDate = s.SaleDate,
+                Quantity = s.Quantity,
+                TotalAmount = s.TotalAmount
+            }));
+
+            await dwContext.SaveChangesAsync();
+
+            _logger.LogInformation(
+                "Carga completada: Sales={salesCount}, Customers={custCount}, Products={prodCount}, Stores={storeCount}, PaymentMethods={payCount}",
+                sales.Count(), customers.Count(), products.Count(), stores.Count(), paymentMethods.Count());
         }
     }
-
 }

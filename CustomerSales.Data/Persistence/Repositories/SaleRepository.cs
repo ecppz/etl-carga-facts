@@ -14,10 +14,6 @@ namespace CustomerSales.Data.Persistence.Repositories
         {
             _dbContext = dbContext;
         }
-        public async Task<bool> InsertAsync(Sale sale)
-        {
-            return await _dbContext.SaveChangesAsync() > 0;
-        }
 
         public async Task<IEnumerable<Sale>> GetAllAsync()
         {

@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace CustomerSales.Data.Persistence.Migrations
+namespace CustomerSales.Data.Persistence.Migrations.Db
 {
     public partial class InitWithoutIdentity : Migration
     {

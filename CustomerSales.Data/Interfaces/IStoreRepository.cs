@@ -4,6 +4,6 @@ namespace CustomerSales.Data.Interfaces
 {
     public interface IStoreRepository
     {
-        Task<bool> InsertAsync(Store store);
+        Task<IEnumerable<Store>> GetAllAsync();
     }
 }

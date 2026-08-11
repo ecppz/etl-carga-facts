@@ -10,11 +10,20 @@ namespace CustomerSales.WkService
     {
         public static void WorkerLayerIoc(this IServiceCollection services, IConfiguration config)
         {
-            var connectionString = config.GetConnectionString("DefaultConnection");
+            // db
+            var dbConn = config.GetConnectionString("DBConnection");
 
             services.AddDbContext<CustomerSalesContext>(opt =>
-                opt.UseSqlServer(connectionString,
+                opt.UseSqlServer(dbConn,
                 m => m.MigrationsAssembly(typeof(CustomerSalesContext).Assembly.FullName)),
+                ServiceLifetime.Scoped);
+
+            var dwConn = config.GetConnectionString("DWConnection");
+            
+            // dw
+            services.AddDbContext<CustomerSalesDWContext>(opt =>
+                opt.UseSqlServer(dwConn,
+                m => m.MigrationsAssembly(typeof(CustomerSalesDWContext).Assembly.FullName)),
                 ServiceLifetime.Scoped);
 
             services.AddScoped(typeof(IExtractorService<>), typeof(ExtractionService<>));
@@ -24,4 +33,5 @@ namespace CustomerSales.WkService
             services.AddScoped<IApiExtractor, ApiExtractor>();
         }
     }
+
 }

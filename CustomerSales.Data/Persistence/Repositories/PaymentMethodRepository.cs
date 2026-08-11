@@ -1,6 +1,7 @@
 ﻿using CustomerSales.Data.Entities.Db;
 using CustomerSales.Data.Interfaces;
 using CustomerSales.Data.Persistence.Contexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace CustomerSales.Data.Persistence.Repositories
 {
@@ -12,11 +13,9 @@ namespace CustomerSales.Data.Persistence.Repositories
         {
             _dbContext = dbContext;
         }
-
-        public async Task<bool> InsertAsync(PaymentMethod paymentMethod)
+        public async Task<IEnumerable<PaymentMethod>> GetAllAsync()
         {
-            await _dbContext.PaymentMethods.AddAsync(paymentMethod);
-            return await _dbContext.SaveChangesAsync() > 0;
+            return await _dbContext.PaymentMethods.ToListAsync();
         }
     }
 }

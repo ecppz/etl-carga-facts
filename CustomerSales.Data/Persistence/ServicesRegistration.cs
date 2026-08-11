@@ -11,11 +11,20 @@ namespace CustomerSales.Data.Persistence
     {
         public static void PersistenceLayerIoc(this IServiceCollection services, IConfiguration config)
         {
-            var connectionString = config.GetConnectionString("DefaultConnection");
+            // db
+            var dbConn = config.GetConnectionString("DBConnection");
 
             services.AddDbContext<CustomerSalesContext>(opt =>
-                opt.UseSqlServer(connectionString,
+                opt.UseSqlServer(dbConn,
                 m => m.MigrationsAssembly(typeof(CustomerSalesContext).Assembly.FullName)),
+                ServiceLifetime.Scoped);
+
+            var dwConn = config.GetConnectionString("DWConnection");
+
+            // dw
+            services.AddDbContext<CustomerSalesDWContext>(opt =>
+                opt.UseSqlServer(dwConn,
+                m => m.MigrationsAssembly(typeof(CustomerSalesDWContext).Assembly.FullName)),
                 ServiceLifetime.Scoped);
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();

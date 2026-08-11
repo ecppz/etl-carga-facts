@@ -1,8 +1,9 @@
 ﻿using CustomerSales.Data.Entities.Db;
+
 namespace CustomerSales.Application.Interfaces
 {
-    public interface ISaleService 
+    public interface IProductService
     {
-        Task<IEnumerable<Sale>> GetSalesAsync();
+        Task<IEnumerable<Product>> GetProductsAsync();
     }
 }

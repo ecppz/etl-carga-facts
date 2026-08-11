@@ -9,6 +9,10 @@ namespace CustomerSales.Application
     {
         public static void ApplicationLayerIoc(this IServiceCollection services)
         {
+            services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IStoreService, StoreService>();
+            services.AddScoped<IPaymentMethodService, PaymentMethodService>();
             services.AddScoped<ISaleService, SaleService>();
         }
     }

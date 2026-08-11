@@ -1,31 +1,48 @@
-using System.Net.Http.Json;
 using CustomerSales.Data.Entities.Db;
 using CustomerSales.WkService.Interfaces;
+using System.Net.Http.Json;
 
-namespace CustomerSales.WkService.Services
+public class ApiExtractor : IApiExtractor
 {
-    public class ApiExtractor : IApiExtractor
+    private readonly HttpClient _httpClient;
+    private readonly ILogger<ApiExtractor> _logger;
+    private readonly string _baseUrl;
+
+    public ApiExtractor(HttpClient httpClient, ILogger<ApiExtractor> logger, IConfiguration config)
     {
-        private readonly HttpClient _httpClient;
-        private readonly ILogger<ApiExtractor> _logger;
-        private readonly string _apiUrl;
+        _httpClient = httpClient;
+        _logger = logger;
+        _baseUrl = config["Sources:ApiBaseUrl"]
+            ?? throw new ArgumentNullException(nameof(config), "API Base URL is not configured");
+    }
 
-        public ApiExtractor(HttpClient httpClient, ILogger<ApiExtractor> logger, IConfiguration config)
-        {
-            _httpClient = httpClient;
-            _logger = logger;
-            _apiUrl = config["Sources:ApiUrl"]
-                ?? throw new ArgumentNullException(nameof(config), "API URL isnot configured");
-        }
+    public async Task<IEnumerable<Sale>> ExtractSalesAsync()
+    {
+        var url = $"{_baseUrl}/Sale";
+        return await _httpClient.GetFromJsonAsync<List<Sale>>(url) ?? new List<Sale>();
+    }
 
-        public async Task<IEnumerable<Sale>> ExtractAsync()
-        {
-            _logger.LogInformation("Starting API extraction from {Url}", _apiUrl);
+    public async Task<IEnumerable<Customer>> ExtractCustomersAsync()
+    {
+        var url = $"{_baseUrl}/Customer";
+        return await _httpClient.GetFromJsonAsync<List<Customer>>(url) ?? new List<Customer>();
+    }
 
-            var sales = await _httpClient.GetFromJsonAsync<List<Sale>>(_apiUrl);
+    public async Task<IEnumerable<Product>> ExtractProductsAsync()
+    {
+        var url = $"{_baseUrl}/Product";
+        return await _httpClient.GetFromJsonAsync<List<Product>>(url) ?? new List<Product>();
+    }
 
-            _logger.LogInformation("API extraction completed. Records: {Count}", sales?.Count ?? 0);
-            return sales ?? new List<Sale>();
-        }
+    public async Task<IEnumerable<Store>> ExtractStoresAsync()
+    {
+        var url = $"{_baseUrl}/Store";
+        return await _httpClient.GetFromJsonAsync<List<Store>>(url) ?? new List<Store>();
+    }
+
+    public async Task<IEnumerable<PaymentMethod>> ExtractPaymentMethodsAsync()
+    {
+        var url = $"{_baseUrl}/PaymentMethod";
+        return await _httpClient.GetFromJsonAsync<List<PaymentMethod>>(url) ?? new List<PaymentMethod>();
     }
 }

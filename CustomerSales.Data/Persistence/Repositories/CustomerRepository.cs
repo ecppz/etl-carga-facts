@@ -1,6 +1,7 @@
 ﻿using CustomerSales.Data.Entities.Db;
 using CustomerSales.Data.Interfaces;
 using CustomerSales.Data.Persistence.Contexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace CustomerSales.Data.Persistence.Repositories
 {
@@ -13,10 +14,9 @@ namespace CustomerSales.Data.Persistence.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<bool> InsertAsync(Customer customer)
+        public async Task<IEnumerable<Customer>> GetAllAsync()
         {
-            await _dbContext.Customers.AddAsync(customer);
-            return await _dbContext.SaveChangesAsync() > 0;
+            return await _dbContext.Customers.ToListAsync();
         }
     }
 }
